@@ -6,10 +6,12 @@
     body { font-family: Arial, sans-serif; padding: 20px; }
     input, select, button { width: 100%; padding: 10px; margin: 10px 0; }
     .output { background: #f4f4f4; padding: 10px; border-radius: 5px; word-break: break-all; }
+    .copy-button { width: auto; display: inline-block; margin-top: 5px; }
   </style>
 </head>
 <body>
   <h2>AWS SES SMTP Password Generator</h2>
+
   <label for="secretKey">AWS Secret Access Key:</label>
   <input type="text" id="secretKey" placeholder="Enter your AWS secret access key">
 
@@ -60,6 +62,7 @@
 
   <h3>SMTP Password:</h3>
   <div class="output" id="output"></div>
+  <button class="copy-button" onclick="copyToClipboard()">Copy to Clipboard</button>
 
   <script>
     async function generateSMTPPassword() {
@@ -89,6 +92,16 @@
       const base64 = btoa(String.fromCharCode(...final));
 
       output.textContent = base64;
+    }
+
+    function copyToClipboard() {
+      const output = document.getElementById('output').textContent;
+      if (!output) return alert("Nothing to copy!");
+      navigator.clipboard.writeText(output).then(() => {
+        alert("SMTP password copied to clipboard!");
+      }).catch(err => {
+        alert("Failed to copy: " + err);
+      });
     }
   </script>
 </body>
