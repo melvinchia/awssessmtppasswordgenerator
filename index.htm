@@ -4,65 +4,104 @@
   <title>AWS SES SMTP Password Generator</title>
   <style>
     body { font-family: Arial, sans-serif; padding: 20px; }
-    input, textarea { width: 100%; padding: 10px; margin: 10px 0; }
-    button { padding: 10px 20px; }
-    .output { background: #f4f4f4; padding: 10px; border-radius: 5px; }
+    input, select, button { width: 100%; padding: 10px; margin: 10px 0; }
+    .output { background: #f4f4f4; padding: 10px; border-radius: 5px; word-break: break-all; }
+    .copy-button { width: auto; display: inline-block; margin-top: 5px; }
   </style>
 </head>
 <body>
   <h2>AWS SES SMTP Password Generator</h2>
+
   <label for="secretKey">AWS Secret Access Key:</label>
   <input type="text" id="secretKey" placeholder="Enter your AWS secret access key">
 
-  <label for="region">AWS Region (e.g., us-east-1):</label>
-  <input type="text" id="region" placeholder="Enter AWS region">
+  <label for="region">AWS Region:</label>
+  <select id="region">
+    <option value="us-east-1">US East (N. Virginia)</option>
+    <option value="us-east-2">US East (Ohio)</option>
+    <option value="us-west-1">US West (N. California)</option>
+    <option value="us-west-2">US West (Oregon)</option>
+    <option value="ca-central-1">Canada (Montreal)</option>
+    <option value="ca-west-1">Canada (Calgary)</option>
+    <option value="eu-north-1">Europe (Stockholm)</option>
+    <option value="eu-west-3">Europe (Paris)</option>
+    <option value="eu-west-2">Europe (London)</option>
+    <option value="eu-west-1">Europe (Ireland)</option>
+    <option value="eu-central-1">Europe (Frankfurt)</option>
+    <option value="eu-south-1">Europe (Milan)</option>
+    <option value="eu-south-2">Europe (Spain)</option>
+    <option value="eu-central-2">Europe (Zurich)</option>
+    <option value="ap-south-1">Asia Pacific (Mumbai)</option>
+    <option value="ap-northeast-1">Asia Pacific (Tokyo)</option>
+    <option value="ap-northeast-2">Asia Pacific (Seoul)</option>
+    <option value="ap-northeast-3">Asia Pacific (Osaka)</option>
+    <option value="ap-southeast-1" selected>Asia Pacific (Singapore)</option>
+    <option value="ap-southeast-2">Asia Pacific (Sydney)</option>
+    <option value="ap-southeast-3">Asia Pacific (Jakarta)</option>
+    <option value="ap-east-1">Asia Pacific (Hong Kong)</option>
+    <option value="sa-east-1">South America (São Paulo)</option>
+    <option value="cn-north-1">China (Beijing)</option>
+    <option value="cn-northwest-1">China (Ningxia)</option>
+    <option value="us-gov-east-1">AWS GovCloud (US-East)</option>
+    <option value="us-gov-west-1">AWS GovCloud (US-West)</option>
+    <option value="us-isob-east-1">AWS Secret Region (US ISOB East Ohio)</option>
+    <option value="us-iso-east-1">AWS Top Secret-East Region (US ISO East Virginia)</option>
+    <option value="us-iso-west-1">AWS Top Secret-West Region (US ISO West Colorado)</option>
+    <option value="me-south-1">Middle East (Bahrain)</option>
+    <option value="af-south-1">Africa (Cape Town)</option>
+    <option value="me-central-1">Middle East (UAE)</option>
+    <option value="ap-south-2">Asia Pacific (Hyderabad)</option>
+    <option value="ap-southeast-4">Asia Pacific (Melbourne)</option>
+    <option value="il-central-1">Israel (Tel Aviv)</option>
+    <option value="ap-southeast-5">Asia Pacific (Malaysia)</option>
+    <option value="ap-southeast-7">Asia Pacific (Thailand)</option>
+    <option value="mx-central-1">Mexico (Central)</option>
+  </select>
 
   <button onclick="generateSMTPPassword()">Generate SMTP Password</button>
 
   <h3>SMTP Password:</h3>
   <div class="output" id="output"></div>
+  <button class="copy-button" onclick="copyToClipboard()">Copy to Clipboard</button>
 
   <script>
     async function generateSMTPPassword() {
       const secretKey = document.getElementById('secretKey').value.trim();
-      const region = document.getElementById('region').value.trim();
+      const region = document.getElementById('region').value;
       const output = document.getElementById('output');
 
       if (!secretKey || !region) {
-        output.textContent = "Please enter both secret key and region.";
+        output.textContent = "Please enter both secret key and select a region.";
         return;
       }
 
-      const cryptoKey = await crypto.subtle.importKey(
-        "raw",
-        new TextEncoder().encode(secretKey),
-        { name: "HMAC", hash: "SHA-256" },
-        false,
-        ["sign"]
-      );
+      const encoder = new TextEncoder();
 
-      const message = "SendRawEmail";
-      const date = "11111111";
-      const service = "ses";
-      const terminal = "aws4_request";
-      const regionBytes = new TextEncoder().encode(region);
-
-      // AWS's SMTP password derivation process
       const sign = async (key, msg) => {
         const cryptoKey = await crypto.subtle.importKey("raw", key, { name: "HMAC", hash: "SHA-256" }, false, ["sign"]);
-        return new Uint8Array(await crypto.subtle.sign("HMAC", cryptoKey, new TextEncoder().encode(msg)));
+        return new Uint8Array(await crypto.subtle.sign("HMAC", cryptoKey, encoder.encode(msg)));
       };
 
-      const kDate = await sign(new TextEncoder().encode("AWS4" + secretKey), date);
+      const kDate = await sign(encoder.encode("AWS4" + secretKey), "11111111");
       const kRegion = await sign(kDate, region);
-      const kService = await sign(kRegion, service);
-      const kSigning = await sign(kService, terminal);
-      const smtpPassword = await sign(kSigning, message);
+      const kService = await sign(kRegion, "ses");
+      const kSigning = await sign(kService, "aws4_request");
+      const signature = await sign(kSigning, "SendRawEmail");
 
-      const final = new Uint8Array([0x02, ...smtpPassword]);
+      const final = new Uint8Array([0x02, ...signature]);
       const base64 = btoa(String.fromCharCode(...final));
 
       output.textContent = base64;
+    }
+
+    function copyToClipboard() {
+      const output = document.getElementById('output').textContent;
+      if (!output) return alert("Nothing to copy!");
+      navigator.clipboard.writeText(output).then(() => {
+        alert("SMTP password copied to clipboard!");
+      }).catch(err => {
+        alert("Failed to copy: " + err);
+      });
     }
   </script>
 </body>
