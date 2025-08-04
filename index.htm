@@ -2,110 +2,65 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>AWS SMTP Helper: Converter & Test</title>
+    <title>AWS Secret Access Key to SMTP Password Converter</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
         body { font-family: Arial, sans-serif; margin: 40px; background: #f2f2f2; }
-        .container { background: #fff; padding: 24px; border-radius: 8px; max-width: 430px; margin: auto; box-shadow: 0 0 10px #ddd; }
-        .tabs { display: flex; justify-content: flex-start; border-bottom: 2px solid #eee; margin-bottom: 16px; }
-        .tab-btn {
-            padding: 10px 20px; background: none; border: none; font-size: 16px;
-            cursor: pointer; border-radius: 8px 8px 0 0;
-        }
-        .tab-btn.active { background: #1976d2; color: #fff; border-bottom: 2px solid #1976d2; }
-        .tab-content { display: none; }
-        .tab-content.active { display: block; }
+        .container { background: #fff; padding: 24px; border-radius: 8px; max-width: 400px; margin: auto; box-shadow: 0 0 10px #ddd; }
         label { font-weight: bold; margin-top: 12px; display: block; }
         select, input[type="text"], input[type="password"] { width: 100%; padding: 8px; margin: 6px 0 18px; border: 1px solid #ccc; border-radius: 4px; }
         button { background: #1976d2; color: #fff; border: none; border-radius: 4px; padding: 10px 16px; cursor: pointer; }
         button:hover { background: #135a96; }
         .result { background: #eef; padding: 10px; border-radius: 4px; margin-top: 10px; word-break: break-all; }
-        .warning { background: #fdd; color: #900; padding: 10px; border-radius: 4px; margin-bottom: 10px; }
     </style>
 </head>
 <body>
 <div class="container">
-    <div class="tabs">
-        <button class="tab-btn active" onclick="switchTab('converter')">Converter</button>
-        <button class="tab-btn" onclick="switchTab('smtpTest')">SMTP Test</button>
-    </div>
-    <!-- Converter Tab -->
-    <div class="tab-content active" id="converter">
-        <h2>AWS Secret Access Key to SMTP Password</h2>
-        <label for="region">Region:</label>
-        <select id="region">
-            <option value="us-east-1">US East (N. Virginia) [us-east-1]</option>
-            <option value="us-east-2">US East (Ohio) [us-east-2]</option>
-            <option value="us-west-1">US West (N. California) [us-west-1]</option>
-            <option value="us-west-2">US West (Oregon) [us-west-2]</option>
-            <option value="ap-south-1">Asia Pacific (Mumbai) [ap-south-1]</option>
-            <option value="ap-south-2">Asia Pacific (Hyderabad) [ap-south-2]</option>
-            <option value="ap-northeast-1">Asia Pacific (Tokyo) [ap-northeast-1]</option>
-            <option value="ap-northeast-2">Asia Pacific (Seoul) [ap-northeast-2]</option>
-            <option value="ap-northeast-3">Asia Pacific (Osaka) [ap-northeast-3]</option>
-            <option value="ap-southeast-1" selected>Asia Pacific (Singapore) [ap-southeast-1]</option>
-            <option value="ap-southeast-2">Asia Pacific (Sydney) [ap-southeast-2]</option>
-            <option value="ap-southeast-3">Asia Pacific (Jakarta) [ap-southeast-3]</option>
-            <option value="ca-central-1">Canada (Central) [ca-central-1]</option>
-            <option value="eu-central-1">Europe (Frankfurt) [eu-central-1]</option>
-            <option value="eu-central-2">Europe (Zurich) [eu-central-2]</option>
-            <option value="eu-west-1">Europe (Ireland) [eu-west-1]</option>
-            <option value="eu-west-2">Europe (London) [eu-west-2]</option>
-            <option value="eu-west-3">Europe (Paris) [eu-west-3]</option>
-            <option value="eu-north-1">Europe (Stockholm) [eu-north-1]</option>
-            <option value="eu-south-1">Europe (Milan) [eu-south-1]</option>
-            <option value="il-central-1">Israel (Tel Aviv) [il-central-1]</option>
-            <option value="me-south-1">Middle East (Bahrain) [me-south-1]</option>
-            <option value="me-central-1">Middle East (UAE) [me-central-1]</option>
-            <option value="sa-east-1">South America (São Paulo) [sa-east-1]</option>
-            <option value="af-south-1">Africa (Cape Town) [af-south-1]</option>
-            <option value="us-gov-west-1">AWS GovCloud (US-West) [us-gov-west-1]</option>
-            <option value="us-gov-east-1">AWS GovCloud (US-East) [us-gov-east-1]</option>
-        </select>
-        <label for="secret">AWS Secret Access Key:</label>
-        <input type="password" id="secret" placeholder="Enter your AWS Secret Access Key" autocomplete="off">
-        <button onclick="generateSMTPPassword()">Generate SMTP Password</button>
-        <div class="result" id="smtpPasswordResult" style="display:none;">
-            <strong>SMTP Password:</strong>
-            <span id="smtpPassword"></span>
-        </div>
-    </div>
-    <!-- SMTP Test Tab -->
-    <div class="tab-content" id="smtpTest">
-        <h2>SMTP Test (UI Only)</h2>
-        <div class="warning">
-            <strong>Note:</strong> Browsers do <u>not</u> allow direct connections to SMTP servers.<br>
-            Use this section for reference, or copy and test your credentials with tools like <code>swaks</code>, <code>openssl s_client</code>, or backend utilities.
-        </div>
-        <label for="smtpHost">SMTP Host:</label>
-        <input type="text" id="smtpHost" placeholder="e.g., email-smtp.ap-southeast-1.amazonaws.com">
-        <label for="smtpPort">SMTP Port (e.g., 465 or 587):</label>
-        <input type="text" id="smtpPort" value="587">
-        <label for="smtpUsername">SMTP Username (your AWS IAM Access Key ID):</label>
-        <input type="text" id="smtpUsername" placeholder="AKIA....">
-        <label for="smtpPasswordTest">SMTP Password:</label>
-        <input type="password" id="smtpPasswordTest" placeholder="Paste SMTP password here">
-        <button onclick="smtpTest()">Test SMTP Login</button>
-        <div class="result" id="smtpTestResult" style="display:none;"></div>
+    <h2>AWS Secret Access Key to SMTP Password</h2>
+    <label for="region">Region:</label>
+    <select id="region">
+        <option value="us-east-1">US East (N. Virginia) [us-east-1]</option>
+        <option value="us-east-2">US East (Ohio) [us-east-2]</option>
+        <option value="us-west-1">US West (N. California) [us-west-1]</option>
+        <option value="us-west-2">US West (Oregon) [us-west-2]</option>
+        <option value="ap-south-1">Asia Pacific (Mumbai) [ap-south-1]</option>
+        <option value="ap-south-2">Asia Pacific (Hyderabad) [ap-south-2]</option>
+        <option value="ap-northeast-1">Asia Pacific (Tokyo) [ap-northeast-1]</option>
+        <option value="ap-northeast-2">Asia Pacific (Seoul) [ap-northeast-2]</option>
+        <option value="ap-northeast-3">Asia Pacific (Osaka) [ap-northeast-3]</option>
+        <option value="ap-southeast-1" selected>Asia Pacific (Singapore) [ap-southeast-1]</option>
+        <option value="ap-southeast-2">Asia Pacific (Sydney) [ap-southeast-2]</option>
+        <option value="ap-southeast-3">Asia Pacific (Jakarta) [ap-southeast-3]</option>
+        <option value="ca-central-1">Canada (Central) [ca-central-1]</option>
+        <option value="eu-central-1">Europe (Frankfurt) [eu-central-1]</option>
+        <option value="eu-central-2">Europe (Zurich) [eu-central-2]</option>
+        <option value="eu-west-1">Europe (Ireland) [eu-west-1]</option>
+        <option value="eu-west-2">Europe (London) [eu-west-2]</option>
+        <option value="eu-west-3">Europe (Paris) [eu-west-3]</option>
+        <option value="eu-north-1">Europe (Stockholm) [eu-north-1]</option>
+        <option value="eu-south-1">Europe (Milan) [eu-south-1]</option>
+        <option value="il-central-1">Israel (Tel Aviv) [il-central-1]</option>
+        <option value="me-south-1">Middle East (Bahrain) [me-south-1]</option>
+        <option value="me-central-1">Middle East (UAE) [me-central-1]</option>
+        <option value="sa-east-1">South America (São Paulo) [sa-east-1]</option>
+        <option value="af-south-1">Africa (Cape Town) [af-south-1]</option>
+        <option value="us-gov-west-1">AWS GovCloud (US-West) [us-gov-west-1]</option>
+        <option value="us-gov-east-1">AWS GovCloud (US-East) [us-gov-east-1]</option>
+    </select>
+
+    <label for="secret">AWS Secret Access Key:</label>
+    <input type="password" id="secret" placeholder="Enter your AWS Secret Access Key" autocomplete="off">
+
+    <button onclick="generateSMTPPassword()">Generate SMTP Password</button>
+    <div class="result" id="smtpPasswordResult" style="display:none;">
+        <strong>SMTP Password:</strong>
+        <span id="smtpPassword"></span>
     </div>
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
 <script>
-// Tab switching logic
-function switchTab(which) {
-    var tabs = document.getElementsByClassName("tab-content");
-    var btns = document.getElementsByClassName("tab-btn");
-    for (let i = 0; i < tabs.length; i++) {
-        tabs[i].classList.remove("active");
-        btns[i].classList.remove("active");
-    }
-    document.getElementById(which).classList.add("active");
-    if (which === "converter") btns[0].classList.add("active");
-    else btns[1].classList.add("active");
-}
-
-// SMTP Password converter (as before)
+// AWS SMTP password generation logic
 function generateSMTPPassword() {
     const secret = document.getElementById("secret").value.trim();
     const region = document.getElementById("region").value;
@@ -123,17 +78,6 @@ function generateSMTPPassword() {
     const smtpPassword = CryptoJS.enc.Base64.stringify(finalSig);
     document.getElementById("smtpPassword").textContent = smtpPassword;
     document.getElementById("smtpPasswordResult").style.display = "block";
-}
-
-// SMTP Test (dummy in-browser notification)
-function smtpTest() {
-    document.getElementById("smtpTestResult").style.display = "block";
-    document.getElementById("smtpTestResult").innerHTML =
-        "<strong>Cannot test SMTP login directly from browser.</strong><br>" +
-        "Copy the credentials above, then test from your server/terminal using:<br>" +
-        "<pre>swaks --to somebody@example.com --server [SMTP HOST] --port [PORT] --auth LOGIN --auth-user [USERNAME] --auth-password [SMTP_PASSWORD] --tls</pre>" +
-        "Or with <code>openssl s_client -connect HOST:PORT</code>.<br><br>" +
-        "If you require browser SMTP testing, use a custom backend service or a third-party online tool.";
 }
 </script>
 </body>
