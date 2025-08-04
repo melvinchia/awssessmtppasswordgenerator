@@ -1,108 +1,84 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>AWS SES SMTP Password Generator</title>
-  <style>
-    body { font-family: Arial, sans-serif; padding: 20px; }
-    input, select, button { width: 100%; padding: 10px; margin: 10px 0; }
-    .output { background: #f4f4f4; padding: 10px; border-radius: 5px; word-break: break-all; }
-    .copy-button { width: auto; display: inline-block; margin-top: 5px; }
-  </style>
+    <meta charset="UTF-8">
+    <title>AWS Secret Access Key to SMTP Password Converter</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; background: #f2f2f2; }
+        .container { background: #fff; padding: 24px; border-radius: 8px; max-width: 400px; margin: auto; box-shadow: 0 0 10px #ddd; }
+        label { font-weight: bold; margin-top: 12px; display: block; }
+        select, input[type="text"], input[type="password"] { width: 100%; padding: 8px; margin: 6px 0 18px; border: 1px solid #ccc; border-radius: 4px; }
+        button { background: #1976d2; color: #fff; border: none; border-radius: 4px; padding: 10px 16px; cursor: pointer; }
+        button:hover { background: #135a96; }
+        .result { background: #eef; padding: 10px; border-radius: 4px; margin-top: 10px; word-break: break-all; }
+    </style>
 </head>
 <body>
-  <h2>AWS SES SMTP Password Generator</h2>
+<div class="container">
+    <h2>AWS Secret Access Key to SMTP Password</h2>
+    <label for="region">Region:</label>
+    <select id="region">
+        <option value="us-east-1">US East (N. Virginia) [us-east-1]</option>
+        <option value="us-east-2">US East (Ohio) [us-east-2]</option>
+        <option value="us-west-1">US West (N. California) [us-west-1]</option>
+        <option value="us-west-2">US West (Oregon) [us-west-2]</option>
+        <option value="ap-south-1">Asia Pacific (Mumbai) [ap-south-1]</option>
+        <option value="ap-south-2">Asia Pacific (Hyderabad) [ap-south-2]</option>
+        <option value="ap-northeast-1">Asia Pacific (Tokyo) [ap-northeast-1]</option>
+        <option value="ap-northeast-2">Asia Pacific (Seoul) [ap-northeast-2]</option>
+        <option value="ap-northeast-3">Asia Pacific (Osaka) [ap-northeast-3]</option>
+        <option value="ap-southeast-1" selected>Asia Pacific (Singapore) [ap-southeast-1]</option>
+        <option value="ap-southeast-2">Asia Pacific (Sydney) [ap-southeast-2]</option>
+        <option value="ap-southeast-3">Asia Pacific (Jakarta) [ap-southeast-3]</option>
+        <option value="ca-central-1">Canada (Central) [ca-central-1]</option>
+        <option value="eu-central-1">Europe (Frankfurt) [eu-central-1]</option>
+        <option value="eu-central-2">Europe (Zurich) [eu-central-2]</option>
+        <option value="eu-west-1">Europe (Ireland) [eu-west-1]</option>
+        <option value="eu-west-2">Europe (London) [eu-west-2]</option>
+        <option value="eu-west-3">Europe (Paris) [eu-west-3]</option>
+        <option value="eu-north-1">Europe (Stockholm) [eu-north-1]</option>
+        <option value="eu-south-1">Europe (Milan) [eu-south-1]</option>
+        <option value="il-central-1">Israel (Tel Aviv) [il-central-1]</option>
+        <option value="me-south-1">Middle East (Bahrain) [me-south-1]</option>
+        <option value="me-central-1">Middle East (UAE) [me-central-1]</option>
+        <option value="sa-east-1">South America (São Paulo) [sa-east-1]</option>
+        <option value="af-south-1">Africa (Cape Town) [af-south-1]</option>
+        <option value="us-gov-west-1">AWS GovCloud (US-West) [us-gov-west-1]</option>
+        <option value="us-gov-east-1">AWS GovCloud (US-East) [us-gov-east-1]</option>
+    </select>
 
-  <label for="secretKey">AWS Secret Access Key:</label>
-  <input type="text" id="secretKey" placeholder="Enter your AWS secret access key">
+    <label for="secret">AWS Secret Access Key:</label>
+    <input type="password" id="secret" placeholder="Enter your AWS Secret Access Key" autocomplete="off">
 
-  <label for="region">AWS Region:</label>
-  <select id="region">
-    <option value="us-east-1">US East (N. Virginia)</option>
-    <option value="us-east-2">US East (Ohio)</option>
-    <option value="us-west-1">US West (N. California)</option>
-    <option value="us-west-2">US West (Oregon)</option>
-    <option value="ca-central-1">Canada (Montreal)</option>
-    <option value="ca-west-1">Canada (Calgary)</option>
-    <option value="eu-north-1">Europe (Stockholm)</option>
-    <option value="eu-west-3">Europe (Paris)</option>
-    <option value="eu-west-2">Europe (London)</option>
-    <option value="eu-west-1">Europe (Ireland)</option>
-    <option value="eu-central-1">Europe (Frankfurt)</option>
-    <option value="eu-south-1">Europe (Milan)</option>
-    <option value="eu-south-2">Europe (Spain)</option>
-    <option value="eu-central-2">Europe (Zurich)</option>
-    <option value="ap-south-1">Asia Pacific (Mumbai)</option>
-    <option value="ap-northeast-1">Asia Pacific (Tokyo)</option>
-    <option value="ap-northeast-2">Asia Pacific (Seoul)</option>
-    <option value="ap-northeast-3">Asia Pacific (Osaka)</option>
-    <option value="ap-southeast-1" selected>Asia Pacific (Singapore)</option>
-    <option value="ap-southeast-2">Asia Pacific (Sydney)</option>
-    <option value="ap-southeast-3">Asia Pacific (Jakarta)</option>
-    <option value="ap-east-1">Asia Pacific (Hong Kong)</option>
-    <option value="sa-east-1">South America (São Paulo)</option>
-    <option value="cn-north-1">China (Beijing)</option>
-    <option value="cn-northwest-1">China (Ningxia)</option>
-    <option value="us-gov-east-1">AWS GovCloud (US-East)</option>
-    <option value="us-gov-west-1">AWS GovCloud (US-West)</option>
-    <option value="us-isob-east-1">AWS Secret Region (US ISOB East Ohio)</option>
-    <option value="us-iso-east-1">AWS Top Secret-East Region (US ISO East Virginia)</option>
-    <option value="us-iso-west-1">AWS Top Secret-West Region (US ISO West Colorado)</option>
-    <option value="me-south-1">Middle East (Bahrain)</option>
-    <option value="af-south-1">Africa (Cape Town)</option>
-    <option value="me-central-1">Middle East (UAE)</option>
-    <option value="ap-south-2">Asia Pacific (Hyderabad)</option>
-    <option value="ap-southeast-4">Asia Pacific (Melbourne)</option>
-    <option value="il-central-1">Israel (Tel Aviv)</option>
-    <option value="ap-southeast-5">Asia Pacific (Malaysia)</option>
-    <option value="ap-southeast-7">Asia Pacific (Thailand)</option>
-    <option value="mx-central-1">Mexico (Central)</option>
-  </select>
+    <button onclick="generateSMTPPassword()">Generate SMTP Password</button>
+    <div class="result" id="smtpPasswordResult" style="display:none;">
+        <strong>SMTP Password:</strong>
+        <span id="smtpPassword"></span>
+    </div>
+</div>
 
-  <button onclick="generateSMTPPassword()">Generate SMTP Password</button>
-
-  <h3>SMTP Password:</h3>
-  <div class="output" id="output"></div>
-  <button class="copy-button" onclick="copyToClipboard()">Copy to Clipboard</button>
-
-  <script>
-    async function generateSMTPPassword() {
-      const secretKey = document.getElementById('secretKey').value.trim();
-      const region = document.getElementById('region').value;
-      const output = document.getElementById('output');
-
-      if (!secretKey || !region) {
-        output.textContent = "Please enter both secret key and select a region.";
+<script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+<script>
+// AWS SMTP password generation logic
+function generateSMTPPassword() {
+    const secret = document.getElementById("secret").value.trim();
+    const region = document.getElementById("region").value;
+    if (!secret) {
+        alert("Please enter your AWS Secret Access Key.");
         return;
-      }
-
-      const encoder = new TextEncoder();
-
-      const sign = async (key, msg) => {
-        const cryptoKey = await crypto.subtle.importKey("raw", key, { name: "HMAC", hash: "SHA-256" }, false, ["sign"]);
-        return new Uint8Array(await crypto.subtle.sign("HMAC", cryptoKey, encoder.encode(msg)));
-      };
-
-      const kDate = await sign(encoder.encode("AWS4" + secretKey), "11111111");
-      const kRegion = await sign(kDate, region);
-      const kService = await sign(kRegion, "ses");
-      const kSigning = await sign(kService, "aws4_request");
-      const signature = await sign(kSigning, "SendRawEmail");
-
-      const final = new Uint8Array([0x02, ...signature]);
-      const base64 = btoa(String.fromCharCode(...final));
-
-      output.textContent = base64;
     }
-
-    function copyToClipboard() {
-      const output = document.getElementById('output').textContent;
-      if (!output) return alert("Nothing to copy!");
-      navigator.clipboard.writeText(output).then(() => {
-        alert("SMTP password copied to clipboard!");
-      }).catch(err => {
-        alert("Failed to copy: " + err);
-      });
-    }
-  </script>
+    const message = "SendRawEmail";
+    let dataKey = CryptoJS.HmacSHA256(region, "AWS4" + secret);
+    dataKey = CryptoJS.HmacSHA256("ses", dataKey);
+    dataKey = CryptoJS.HmacSHA256("aws4_request", dataKey);
+    const signature = CryptoJS.HmacSHA256(message, dataKey);
+    const version = CryptoJS.enc.Hex.parse("04");
+    const finalSig = version.concat(signature);
+    const smtpPassword = CryptoJS.enc.Base64.stringify(finalSig);
+    document.getElementById("smtpPassword").textContent = smtpPassword;
+    document.getElementById("smtpPasswordResult").style.display = "block";
+}
+</script>
 </body>
 </html>
